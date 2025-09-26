@@ -9,6 +9,14 @@
     {% include 'shared/navBar.jinja' %}
 
     <style>
+        body{
+            overflow-x: hidden; /* Prevent horizontal scroll */
+        }
+
+        .badge{
+            z-index: 999;
+        }
+
         .item-card {
             background: white;
             border-radius: 20px;
@@ -16,9 +24,10 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             transition: all 0.4s ease;
             margin-bottom: 2rem;
-            margin-left: 10px;
+            
             border: 3px solid transparent;
             text-align: center;
+
         }
         
         .logo-showcase {
@@ -35,7 +44,9 @@
         .logos-wrapper {
         display: flex;
         gap: 2rem;
-        animation: scrollLogos 15s linear infinite; /* adjust speed */
+        animation: scrollLogos 15s linear infinite;
+        width: max-content;      /* only take up what’s needed */
+        will-change: transform;  /* performance hint */
         }
 
         .logo-item img {
@@ -68,46 +79,63 @@
             <!-- Logo Showcase floating bar -->
             <div class="logo-showcase">
                 <div class="logos-wrapper">
-                {% for brand in brands %}
-                    <a href="#" class="logo-item">
-                        <img src="{{ brand.img }}" alt="{{ brand.name }}">
-                    </a>
-                {% endfor %}
-                {% for brand in brands %}
-                    <a href="#" class="logo-item">
-                        <img src="{{ brand.img }}" alt="{{ brand.name }}">
-                    </a>
-                {% endfor %}
-                {% for brand in brands %}
-                    <a href="#" class="logo-item">
-                        <img src="{{ brand.img }}" alt="{{ brand.name }}">
-                    </a>
+                {% for i in range(5) %}
+                    {% for brand in brands %}
+                        <a href="#" class="logo-item">
+                            <img src="{{ brand.img }}" alt="{{ brand.name }}">
+                        </a>
+                    {% endfor %}
                 {% endfor %}
                 </div>
             </div>
         </div>
-        <form action="{{ url_for('browse')}}" onsubmit="searchItems()" id="query" method="GET">
-            <div class="row mb-1 justify-content-center">
-                <div class="col-lg-4 mb-3">
-                    <div class="search-container">
-                        <i class="search-icon"></i>
-                        <div class="input-group">
-                            <input type="text" id="searchBar" class="form-control search-input" placeholder="Search for items..." name="search" value="{{ request.args.get('search', '') }}">
-                            <button class="btn btn-primary search-button" id="searchButton">Search</button>
-                        </div>
-                    </div>
-                </div>
+        <form action="{{ url_for('browse') }}" method="GET" class="d-flex justify-content-between align-items-center px-3" style="width: 60%; max-width: 1200px;">
+    
+            <!-- Search Bar -->
+            <div class="input-group" style="max-width: 400px;">
+                <input type="text" id="searchBar" class="form-control search-input" 
+                    placeholder="Search for items..." 
+                    name="search" 
+                    value="{{ request.args.get('search', '') }}">
+                <button class="btn btn-primary search-button" id="searchButton">Search</button>
+            </div>
+
+            <!-- Sort Dropdown -->
+            <div class="ms-2">
+                <select class="form-select" id="sortBy" name="sortBy" style="width: 200px;" onchange="this.form.submit()">
+                    <option value="" disabled {% if not request.args.get('sortBy') %}selected{% endif %}>Sort By</option>
+                    <option value="price_asc" {% if request.args.get('sortBy') == 'price_asc' %}selected{% endif %}>Price: Low to High</option>
+                    <option value="price_desc" {% if request.args.get('sortBy') == 'price_desc' %}selected{% endif %}>Price: High to Low</option>
+                    <option value="title_asc" {% if request.args.get('sortBy') == 'title_asc' %}selected{% endif %}>Name: A to Z</option>
+                    <option value="title_desc" {% if request.args.get('sortBy') == 'title_desc' %}selected{% endif %}>Name: Z to A</option>
+                    <option value="type_asc" {% if request.args.get('sortBy') == 'type_asc' %}selected{% endif %}>Type: A to Z</option>
+                    <option value="type_desc" {% if request.args.get('sortBy') == 'type_desc' %}selected{% endif %}>Type: Z to A</option>
+                </select>
+            </div>
+
+            <!-- Brand Filter -->
+            <div class="ms-2">
+                <select class="form-select" id="brandFilter" name="brandFilter" style="width: 200px;" onchange="this.form.submit()">
+                    <option value="" {% if not request.args.get('brandFilter') %}selected{% endif %}>All Brands</option>
+                    {% for brand in brands %}
+                        <option value="{{ brand.id }}" 
+                            {% if request.args.get('brandFilter') == brand.id|string %}selected{% endif %}>
+                            {{ brand.name }}
+                        </option>
+                    {% endfor %}
+                </select>
             </div>
         </form>
-        <div class="item-grid me-3 row g-3 pt-3">
+
+        <div class="item-grid row g-3 ms-2 pt-3 me-2" id="itemGrid">
             {% for item in items %}
                 <div class="col-md-4">
-                    <div class="item-card p-3">
+                    <div class="item-card p-1">
                         <div class="image-wrapper position-relative">
-                            <span class="badge position-absolute top-0 start-0 m-2">
+                            <a class="badge position-absolute top-0 start-0 m-2" href="{{ item.brand_link }}" target="_blank" title="Go to {{ item.brand_name }} website">
                                 <img src="{{ item.brand_logo }}" alt="{{ item.brand_logo }}" style="height: 30px; width: auto;">
-                            </span>
-                            <img src="{{ item.img }}" alt="{{ item.title }}" class="img-fluid mb-3"
+                            </a>
+                            <img src="{{ item.img }}" alt="{{ item.title }}" class="img-fluid mb-3" loading="lazy"
                                 style="border-radius: 15px; max-height: 200px; object-fit: cover; width: 100%;">
                         </div>
                         <h5 class="item-title mt-2 text-truncate">{{ item.title }}</h5>
@@ -123,7 +151,7 @@
         {% if items | length == 0 %}
             <p class="text-center">No items found.</p>
         {% else %}
-            <div class="d-flex justify-content-center mt-4" id="paginationControls"></div>
+            <div class="d-flex justify-content-center mt-2 mb-4" id="paginationControls"></div>
         {% endif %}
     </div>
 </body>
@@ -186,7 +214,6 @@
         showPage(currentPage);
         createControls();
     }
-
     document.addEventListener('DOMContentLoaded', () => paginateItems(15));
 
     document.querySelectorAll(".btn-add").forEach(btn => {
