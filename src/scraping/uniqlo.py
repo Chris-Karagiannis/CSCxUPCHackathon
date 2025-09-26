@@ -3,7 +3,6 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
-import sqlite3
 from scrape import Scrape
 
 class Uniqlo(Scrape):
@@ -16,9 +15,9 @@ class Uniqlo(Scrape):
         self.scrape("women/tops", "Tops")
         self.scrape("men/bottoms", "Bottoms")
         self.scrape("women/bottoms", "Bottoms")
+        self.scrape("men/shirts", "Tops")
 
     def scrape(self, page, clothing_type):
-        print("Running", page + "...")
         url = "https://www.uniqlo.com/au/en/" + page
         driver = webdriver.Chrome()
         driver.get(url)
@@ -27,8 +26,6 @@ class Uniqlo(Scrape):
         search_count = len(initial_soup.find_all("div", class_="fr-ec-product-tile-resize-wrapper"))
       
         while search_count < search_results:
-            print(search_results, search_count)
-
             # Move page
             driver.find_element(By.TAG_NAME, "body").send_keys(Keys.END)
             driver.find_element(By.TAG_NAME, "body").send_keys(Keys.PAGE_UP)
@@ -49,7 +46,7 @@ class Uniqlo(Scrape):
             item["img"] = product.find("img")["src"].split("?")[0]
             item["price"] = product.find("p", class_="fr-ec-price-text").text[1:]
             item["type"] = clothing_type
-            
+
             if item not in items:
                 items.append(item)
 
