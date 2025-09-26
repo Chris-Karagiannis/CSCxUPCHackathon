@@ -56,7 +56,7 @@
                         <p class="item-type">{{ item.type }}</p>
                         <p class="fw-bold">${{ "%.2f"|format(item.price) }}</p>
                         <a href="{{ item.link }}" target="_blank" class="btn btn-primary">View Details</a>
-                        <a href="#" class="btn btn-secondary"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</a>
+                        <a href="#" class="btn btn-secondary btn-add" data-id="{{ item.id }}"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</a>
                     </div>
                 </div>
             {% endfor %}
@@ -132,5 +132,31 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => paginateItems(15));
+
+    document.querySelectorAll(".btn-add").forEach(btn => {
+        btn.addEventListener("click", async (event) => {
+            event.preventDefault();
+            const productId = btn.dataset.id;
+            btn.disabled = true;
+            try {
+                const res = await fetch("/cart/add", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ product_id: productId, qty: 1 })
+                });
+                const data = await res.json();
+                if (data.ok){
+                    btn.textContent = "Added ✓";
+                } else {
+                alert(data.error || "Failed to add");
+                btn.disabled = false;
+                }
+            } catch (e) {
+                alert("Network error");
+                btn.disabled = false;
+            }
+
+    });
+});
 </script>
 </html>
