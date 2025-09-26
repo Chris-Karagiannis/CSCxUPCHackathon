@@ -31,20 +31,22 @@
             <h2>Welcome to the Browse Page</h2>
             <p>Explore our collection of items.</p>
         </div>
-        <form action="/search" method="GET">
+        <form action="{{ url_for('browse')}}" onsubmit="searchItems()" id="query" method="GET">
             <div class="row mb-1 justify-content-center">
                 <div class="col-lg-4 mb-3">
                     <div class="search-container">
                         <i class="search-icon"></i>
                         <div class="input-group">
-                            <input type="text" id="searchBar" class="form-control search-input" placeholder="Search for items...">
-                            {# <button class="btn btn-primary search-button" id="searchButton">Search</button> #}
+                            <input type="text" id="searchBar" class="form-control search-input" placeholder="Search for items..." name="search" value="{{ request.args.get('search', '') }}">
+                            <button class="btn btn-primary search-button" id="searchButton">Search</button>
+                            <button class="btn btn-secondary ms-2" type="reset">Clear</button>
                         </div>
                     </div>
                 </div>
             </div>
         </form>
         <div class="item-grid me-3 row g-3 pt-3">
+
             {% for item in items %}
                 <div class="col-md-4">
                     <div class="item-card p-3">
@@ -59,7 +61,10 @@
                 </div>
             {% endfor %}
         </div>
-        {% if items|length == 0 %}
+        
+        <p>{{items | length}}</p>
+
+        {% if items | length == 0 %}
             <p class="text-center">No items found.</p>
         {% else %}
             <div class="d-flex justify-content-center mt-4" id="paginationControls"></div>
@@ -67,41 +72,65 @@
     </div>
 </body>
 <script>
-    document.getElementById("searchBar").addEventListener("keyup", function () {
-        let filter = this.value.toLowerCase();
-        let items = document.querySelectorAll(".item-card");
+    function searchItems(){
+        let input = document.getElementById("searchBar").value
+        input=input.toLowerCase();
+        let x = document.getElementsByClassName('item-card');
 
-        items.forEach(card => {
-            let title = card.querySelector("h5").textContent.toLowerCase();
-            let desc = card.querySelector("p").textContent.toLowerCase();
-
-            if (title.includes(filter) || desc.includes(filter)) {
-            card.parentElement.style.display = ""; // show
-            } else {
-            card.parentElement.style.display = "none"; // hide
+        for (i = 0; i < x.length; i++) { 
+            if (!x[i].innerHTML.toLowerCase().includes(input)) {
+                x[i].parentElement.style.display="none";
             }
-        });
-    });
-
-    // Pagination
-    const itemsPerPage = 12;
-    const itemCards = document.querySelectorAll('.item-card');
-    const totalPages = Math.ceil(itemCards.length / itemsPerPage);
-    let currentPage = 1;
-    function showPage(page) {
-        const start = (page - 1) * itemsPerPage;
-        const end = start + itemsPerPage;
-
-        itemCards.forEach((card, index) => {
-            if (index >= start && index < end) {
-                card.parentElement.style.display = ""; // show
-            } else {
-                card.parentElement.style.display = "none"; // hide
+            else {
+                x[i].parentElement.style.display="";
             }
-        });
+        }
     }
-    
 
+    function paginateItems(itemsPerPage) {
+        const items = document.querySelectorAll('.item-card');
+        const totalPages = Math.ceil(items.length / itemsPerPage);
+        let currentPage = 1;
 
+        const showPage = page => {
+            const start = (page - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            items.forEach((item, i) => item.parentElement.style.display = (i >= start && i < end) ? '' : 'none');
+        };
+
+        const createControls = () => {
+            const container = document.getElementById('paginationControls');
+            container.innerHTML = '';
+
+            const btn = (text, page) => {
+                const b = document.createElement('button');
+                b.textContent = text;
+                b.className = 'btn btn-outline-primary mx-1';
+                if (page === currentPage) b.classList.add('active');
+                b.disabled = page < 1 || page > totalPages;
+                b.addEventListener('click', () => {
+                    currentPage = page;
+                    showPage(currentPage);
+                    createControls();
+                });
+                container.appendChild(b);
+            };
+
+            btn('Prev', currentPage - 1);
+
+            let start = Math.max(1, currentPage - 1);
+            let end = Math.min(totalPages, start + 2);
+            if (end - start < 2) start = Math.max(1, end - 2);
+
+            for (let i = start; i <= end; i++) btn(i, i);
+
+            btn('Next', currentPage + 1);
+        };
+
+        showPage(currentPage);
+        createControls();
+    }
+
+    document.addEventListener('DOMContentLoaded', () => paginateItems(15));
 </script>
 </html>
