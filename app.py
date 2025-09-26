@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.jinja")
 
 
 @app.route("/browse")
@@ -16,7 +16,7 @@ def browse():
     c = conn.cursor()
     like_pattern = f"%{search_query}%"
     c.execute(
-        "SELECT id, title, type, link, img, price FROM Product "
+        "SELECT id, title, type, link, img, price, brand FROM Product "
         "WHERE title LIKE ? OR type LIKE ?",
         (like_pattern, like_pattern)
     )
@@ -24,7 +24,7 @@ def browse():
     conn.close()
 
     items_list = [
-        {"id": row[0], "title": row[1], "type": row[2], "link": row[3], "img": row[4], "price": row[5]}
+        {"id": row[0], "title": row[1], "type": row[2], "link": row[3], "img": row[4], "price": row[5], "brand": row[6]}
         for row in rows
     ]
 
@@ -105,4 +105,4 @@ def ensure_cart():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
