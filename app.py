@@ -12,11 +12,17 @@ def index():
 def browse():
     search_query = request.args.get("search", "")
     sort_by = request.args.get("sortBy", "")
+    brand_filter = request.args.get("brandFilter", "")
+
+    page = int(request.args.get("page", 1))  # default to page 1
+    items_per_page = 15
+    offset = (page - 1) * items_per_page
+
 
     conn = sqlite3.connect("product_data.db")
     c = conn.cursor()
 
-    # -- Sorting logic --
+    # Sorting logic
     sort_options = {
         "price_asc": "price ASC",
         "price_desc": "price DESC",
@@ -25,18 +31,24 @@ def browse():
         "type_asc": "type ASC",
         "type_desc": "type DESC",
     }
-    order_clause = sort_options.get(sort_by, "Product.id ASC")  # default sorting
+    order_clause = sort_options.get(sort_by, "Product.id ASC")
 
-    # -- Product Search --
-    like_pattern = f"%{search_query}%"
-    query = f"""
+    # Base query
+    query = """
         SELECT Product.id, title, type, Product.link, Product.img, price, Brand.img, Brand.name, Brand.link
         FROM Product
         JOIN Brand ON Product.brand = Brand.id
-        WHERE title LIKE ? OR type LIKE ?
-        ORDER BY {order_clause}
+        WHERE (title LIKE ? OR type LIKE ?)
     """
-    c.execute(query, (like_pattern, like_pattern))
+    params = [f"%{search_query}%", f"%{search_query}%"]
+
+    # Brand filter
+    if brand_filter:
+        query += " AND Brand.id = ?"
+        params.append(brand_filter)
+
+    query += f" ORDER BY {order_clause} LIMIT 200"
+    c.execute(query, params)
     rows = c.fetchall()
 
     items_list = [
@@ -54,14 +66,12 @@ def browse():
         for row in rows
     ]
 
-    # -- Brand List --
+    # Brand list for dropdown
     c.execute("SELECT id, name, img FROM Brand")
     brands_rows = c.fetchall()
-
     brands_list = [{"id": row[0], "name": row[1], "img": row[2]} for row in brands_rows]
 
     conn.close()
-
     return render_template("browse.jinja", items=items_list, brands=brands_list)
 
     
