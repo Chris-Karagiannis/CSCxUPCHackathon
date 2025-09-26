@@ -16,15 +16,16 @@ def browse():
     c = conn.cursor()
     like_pattern = f"%{search_query}%"
     c.execute(
-        "SELECT id, title, type, link, img, price, brand FROM Product "
+        "SELECT Product.id, title, type, Product.link, Product.img, price, Brand.img, Brand.name FROM Product "\
+        "Join Brand ON Product.brand = Brand.id "\
         "WHERE title LIKE ? OR type LIKE ?",
         (like_pattern, like_pattern)
     )
     rows = c.fetchall()
     conn.close()
-
+    
     items_list = [
-        {"id": row[0], "title": row[1], "type": row[2], "link": row[3], "img": row[4], "price": row[5], "brand": row[6]}
+        {"id": row[0], "title": row[1], "type": row[2], "link": row[3], "img": row[4], "price": row[5], "brand_logo": row[6], "brand_name": row[7]}
         for row in rows
     ]
 
