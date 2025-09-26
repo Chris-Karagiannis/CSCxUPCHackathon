@@ -53,7 +53,7 @@ def Cart():
     if ids:
         placeholders = ",".join(["?"]*len(ids))
         with get_db() as db:
-            rows = db.execute(f"SELECT id, title, price, img, link, brand FROM Product WHERE id IN ({placeholders})", ids).fetchall()
+            rows = db.execute(f"SELECT p.id as id, title as title, price, p.img as img, p.link as link, p.brand as brand, b.img as brand_logo FROM Product as p JOIN Brand as b ON p.brand = b.id WHERE p.id IN ({placeholders})", ids).fetchall()
         for row in rows:
             qty = int(cart.get(str(row["id"]), 0))
             line_total = row["price"] * qty
@@ -65,10 +65,11 @@ def Cart():
                 "link": row["link"],
                 "price": row["price"],
                 "brand": row["brand"],
+                "brand_logo": row["brand_logo"],
                 "qty": qty,
                 "line_total": line_total
             })
-    return render_template("cart.html", items=products, subtotal=subtotal)
+    return render_template("cart.jinja", items=products, subtotal=subtotal)
 
 @app.post("/cart/add")
 def cart_add():
@@ -97,11 +98,13 @@ def cart_update():
         qty = int(data.get("qty", 1))
     except (TypeError, ValueError):
         return jsonify({"ok": False, "error": "invalid product"}), 400
+    qty = max(0, qty)
     cart = ensure_cart()
     if qty <= 0:
         cart.pop(str(pid), None)
     else:
-        cart[str(pid), None]
+        cart[str(pid)] = qty
+
     session["cart"] = cart
     return jsonify({"ok": True, "cartCount": sum(int(v) for v in cart.values())})
 
