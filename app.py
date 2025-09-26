@@ -6,5 +6,9 @@ app = Flask(__name__)
 def index():
     return render_template("index.jinja")
 
+@app.route("/browse")
+def browse():
+    return render_template("browse.jinja")
+
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
