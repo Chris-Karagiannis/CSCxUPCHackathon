@@ -4,7 +4,11 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.jinja")
+    return render_template("index.html")
 
-if __name__ == "__main__":
-    app.run()
+@app.route("/Cart")
+def Cart():
+    return render_template("cart.html")
+
+if __name__ == '__main__':
+    app.run(debug=True)
