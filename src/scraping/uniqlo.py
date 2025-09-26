@@ -7,7 +7,7 @@ from scrape import Scrape
 
 class Uniqlo(Scrape):
     def __init__(self):
-        super().__init__("Uniqlo")
+        super().__init__(1)
 
     def run(self):
         # Note: Need to whole brand in table before running or will be double ups

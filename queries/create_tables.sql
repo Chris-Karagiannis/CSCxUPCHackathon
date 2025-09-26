@@ -7,5 +7,6 @@ CREATE TABLE Product (
     link TEXT,
     img TEXT,
     price REAL,
-    brand TEXT
+    brand INTEGER,
+    FOREIGN KEY (brand) REFERENCES Brand(id)
 );
