@@ -37,26 +37,45 @@
                     <div class="search-container">
                         <i class="search-icon"></i>
                         <div class="input-group">
-                            <input type="text" class="form-control search-input" placeholder="Search for items...">
-                            <button class="btn btn-primary search-button" id="searchButton">Search</button>
+                            <input type="text" id="searchBar" class="form-control search-input" placeholder="Search for items...">
+                            {# <button class="btn btn-primary search-button" id="searchButton">Search</button> #}
                         </div>
                     </div>
                 </div>
             </div>
         </form>
         <div class="item-grid me-3 row g-3 pt-3">
-            {% set items = [1,2,3,4] %}
-            {% for i in items %}
+            {% for item in items %}
                 <div class="col-md-4">
                     <div class="item-card p-3">
-                        <img src="#" alt="item" class="img-fluid mb-3" style="border-radius: 15px; max-height: 200px; object-fit: cover;">
-                        <h5>Name</h5>
-                        <p>Desc</p>
-                        <a href="#" class="btn btn-primary">View Details</a>
+                        <img src="{{ item.img }}" alt="{{ item.title }}" class="img-fluid mb-3"
+                            style="border-radius: 15px; max-height: 200px; object-fit: cover;">
+                        <h5 class="item-title">{{ item.title }}</h5>
+                        <p class="item-description">{{ item.type }}</p>
+                        <p class="fw-bold">${{ "%.2f"|format(item.price) }}</p>
+                        <a href="{{ item.link }}" target="_blank" class="btn btn-primary">View Details</a>
+                        <a href="#" class="btn btn-secondary"><i class="fa-solid fa-cart-shopping"></i> Add to Cart</a>
                     </div>
                 </div>
             {% endfor %}
         </div>
     </div>
 </body>
+<script>
+    document.getElementById("searchBar").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let items = document.querySelectorAll(".item-card");
+
+        items.forEach(card => {
+            let title = card.querySelector("h5").textContent.toLowerCase();
+            let desc = card.querySelector("p").textContent.toLowerCase();
+
+            if (title.includes(filter) || desc.includes(filter)) {
+            card.parentElement.style.display = ""; // show
+            } else {
+            card.parentElement.style.display = "none"; // hide
+            }
+        });
+    });
+</script>
 </html>
