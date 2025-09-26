@@ -42,7 +42,7 @@ class Uniqlo(Scrape):
             item = {}
             item["title"] = product.find("img")["alt"]
             item["brand"] = self.brand
-            item["link"] = "www.uniqlo.com" + product.find("a")["href"]
+            item["link"] = "https://www.uniqlo.com" + product.find("a")["href"]
             item["img"] = product.find("img")["src"].split("?")[0]
             item["price"] = product.find("p", class_="fr-ec-price-text").text[1:]
             item["type"] = clothing_type
