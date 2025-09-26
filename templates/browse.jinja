@@ -59,6 +59,11 @@
                 </div>
             {% endfor %}
         </div>
+        {% if items|length == 0 %}
+            <p class="text-center">No items found.</p>
+        {% else %}
+            <div class="d-flex justify-content-center mt-4" id="paginationControls"></div>
+        {% endif %}
     </div>
 </body>
 <script>
@@ -77,5 +82,26 @@
             }
         });
     });
+
+    // Pagination
+    const itemsPerPage = 12;
+    const itemCards = document.querySelectorAll('.item-card');
+    const totalPages = Math.ceil(itemCards.length / itemsPerPage);
+    let currentPage = 1;
+    function showPage(page) {
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+
+        itemCards.forEach((card, index) => {
+            if (index >= start && index < end) {
+                card.parentElement.style.display = ""; // show
+            } else {
+                card.parentElement.style.display = "none"; // hide
+            }
+        });
+    }
+    
+
+
 </script>
 </html>
