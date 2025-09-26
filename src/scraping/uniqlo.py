@@ -7,7 +7,7 @@ from scrape import Scrape
 
 class Uniqlo(Scrape):
     def __init__(self):
-        super().__init__("Uniqlo")
+        super().__init__(1)
 
     def run(self):
         # Note: Need to whole brand in table before running or will be double ups
@@ -42,7 +42,7 @@ class Uniqlo(Scrape):
             item = {}
             item["title"] = product.find("img")["alt"]
             item["brand"] = self.brand
-            item["link"] = "www.uniqlo.com" + product.find("a")["href"]
+            item["link"] = "https://www.uniqlo.com" + product.find("a")["href"]
             item["img"] = product.find("img")["src"].split("?")[0]
             item["price"] = product.find("p", class_="fr-ec-price-text").text[1:]
             item["type"] = clothing_type

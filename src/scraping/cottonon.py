@@ -7,7 +7,7 @@ from scrape import Scrape
 
 class CottonOn(Scrape):
     def __init__(self):
-        super().__init__("Cotton On")
+        super().__init__(2)
 
     def run(self):
         self.scrape("men/mens-clothing/mens-tops/", "Tops")
