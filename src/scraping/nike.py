@@ -3,11 +3,16 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 import time
-import sqlite3
+from scrape import Scrape
 
-class Nike:
+class Nike(Scrape):
     def __init__(self):
-        pass
+        super().__init__("Nike")
+
+    def run(self):
+        # Note: Need to whole brand in table before running or will be double ups
+        self.scrape("tops-t-shirts-9om13", "Tops")
+        self.scrape("trousers-tights-2kq19", "Bottoms")
 
     def scrape(self, page, clothing_type):
         url = "https://www.nike.com/au/w/" + page
@@ -41,6 +46,7 @@ class Nike:
         for figure in figures:
             item = {}
             item["title"] = figure.find("a", class_="product-card__link-overlay").text
+            item["brand"] = self.brand
             item["link"] = figure.find("a", class_="product-card__link-overlay")["href"]
             item["img"] = figure.find("img")["src"]
 
@@ -53,17 +59,9 @@ class Nike:
 
             if item not in items:
                 items.append(item)
-
-        # Add to DB
-        conn = sqlite3.connect('product_data.db')
-        sql =   "INSERT INTO Product (title, type, link, img, price) " \
-                "VALUES (?, ?, ?, ?, ?) "
         
         for item in items:
-            conn.execute(sql, (item["title"], item["type"], item["link"], item["img"], item["price"]))
-        
-        conn.commit()
-        conn.close()
+            self.add_to_db(item)
 
-Nike().scrape("tops-t-shirts-9om13", "Tops")
+
             

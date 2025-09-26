@@ -6,5 +6,6 @@ CREATE TABLE Product (
     type TEXT,
     link TEXT,
     img TEXT,
-    price REAL
+    price REAL,
+    brand TEXT
 );

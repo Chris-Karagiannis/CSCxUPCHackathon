@@ -7,21 +7,30 @@ app = Flask(__name__)
 def index():
     return render_template("index.html")
 
+
 @app.route("/browse")
 def browse():
+    search_query = request.args.get("search", "")
     conn = sqlite3.connect("product_data.db")
+    
     c = conn.cursor()
-    c.execute("SELECT id, title, type, link, img, price FROM Product")
-    items = c.fetchall()
+    like_pattern = f"%{search_query}%"
+    c.execute(
+        "SELECT id, title, type, link, img, price FROM Product "
+        "WHERE title LIKE ? OR type LIKE ?",
+        (like_pattern, like_pattern)
+    )
+    rows = c.fetchall()
     conn.close()
 
-    # Convert to list of dicts (Jinja friendly)
     items_list = [
         {"id": row[0], "title": row[1], "type": row[2], "link": row[3], "img": row[4], "price": row[5]}
-        for row in items
+        for row in rows
     ]
 
     return render_template("browse.jinja", items=items_list)
+    
+    
 
 @app.route("/Cart")
 def Cart():
