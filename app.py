@@ -5,7 +5,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.jinja")
 
 
 @app.route("/browse")
@@ -56,7 +56,7 @@ def Cart():
                 "qty": qty,
                 "line_total": line_total
             })
-    return render_template("cart.html", items=products, subtotal=subtotal)
+    return render_template("cart.jinja", items=products, subtotal=subtotal)
 
 def cart_add():
     data = request.get_json(silent=True) or request.form
