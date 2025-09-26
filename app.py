@@ -11,21 +11,46 @@ def index():
 @app.route("/browse")
 def browse():
     search_query = request.args.get("search", "")
+    sort_by = request.args.get("sortBy", "")
+
     conn = sqlite3.connect("product_data.db")
     c = conn.cursor()
 
+    # -- Sorting logic --
+    sort_options = {
+        "price_asc": "price ASC",
+        "price_desc": "price DESC",
+        "title_asc": "title ASC",
+        "title_desc": "title DESC",
+        "type_asc": "type ASC",
+        "type_desc": "type DESC",
+    }
+    order_clause = sort_options.get(sort_by, "Product.id ASC")  # default sorting
+
     # -- Product Search --
     like_pattern = f"%{search_query}%"
-    c.execute(
-        "SELECT Product.id, title, type, Product.link, Product.img, price, Brand.img, Brand.name FROM Product "\
-        "Join Brand ON Product.brand = Brand.id "\
-        "WHERE title LIKE ? OR type LIKE ?",
-        (like_pattern, like_pattern)
-    )
+    query = f"""
+        SELECT Product.id, title, type, Product.link, Product.img, price, Brand.img, Brand.name, Brand.link
+        FROM Product
+        JOIN Brand ON Product.brand = Brand.id
+        WHERE title LIKE ? OR type LIKE ?
+        ORDER BY {order_clause}
+    """
+    c.execute(query, (like_pattern, like_pattern))
     rows = c.fetchall()
-    
+
     items_list = [
-        {"id": row[0], "title": row[1], "type": row[2], "link": row[3], "img": row[4], "price": row[5], "brand_logo": row[6], "brand_name": row[7]}
+        {
+            "id": row[0],
+            "title": row[1],
+            "type": row[2],
+            "link": row[3],
+            "img": row[4],
+            "price": row[5],
+            "brand_logo": row[6],
+            "brand_name": row[7],
+            "brand_link": row[8],
+        }
         for row in rows
     ]
 
@@ -33,13 +58,12 @@ def browse():
     c.execute("SELECT id, name, img FROM Brand")
     brands_rows = c.fetchall()
 
-    brands_list = [
-        {"id": row[0], "name": row[1], "img": row[2]} for row in brands_rows
-    ]
+    brands_list = [{"id": row[0], "name": row[1], "img": row[2]} for row in brands_rows]
 
     conn.close()
-    
+
     return render_template("browse.jinja", items=items_list, brands=brands_list)
+
     
 
 @app.route("/Cart")
