@@ -58,37 +58,6 @@
                     </div>
                 </div>
             {% endfor %}
-            {% if total_pages > 1 and start_page > 0 %}
-                <div class="d-flex justify-content-center mt-4">
-                    <nav>
-                        <ul class="pagination">
-
-                            <!-- Prev button -->
-                            {% if page > 1 %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('browse', page=page-1) }}">Previous</a>
-                            </li>
-                            {% endif %}
-
-                            <!-- Page numbers (sliding window) -->
-                            {% for p in range(start_page, end_page + 1) %}
-                            <li class="page-item {% if p == page %}active{% endif %}">
-                                <a class="page-link" href="{{ url_for('browse', page=p) }}">{{ p }}</a>
-                            </li>
-                            {% endfor %}
-
-                            <!-- Next button -->
-                            {% if page < total_pages %}
-                            <li class="page-item">
-                                <a class="page-link" href="{{ url_for('browse', page=page+1) }}">Next</a>
-                            </li>
-                            {% endif %}
-
-                        </ul>
-                    </nav>
-                </div>
-            {% endif %}
-
         </div>
     </div>
 </body>
