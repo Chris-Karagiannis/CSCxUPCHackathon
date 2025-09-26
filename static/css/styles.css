@@ -6,7 +6,6 @@
   justify-content: space-between;
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* softer shadow */
-  border-radius: 8px; /* gentle rounded edges */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 

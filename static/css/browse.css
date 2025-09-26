@@ -1,0 +1,52 @@
+:root {
+        --zoolirante-orange: #FB7813;
+        --zoolirante-cream: #FFF8DC;
+        --zoolirante-off-white: #F0F0F0;
+        --zoolirante-dark-teal: #17706E;
+        --zoolirante-light-green: #B6EB7A;
+    }
+
+body {
+    background: linear-gradient(135deg, var(--zoolirante-cream) 0%, #F0F0F0 100%);
+    /* font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; */
+}
+
+/* Custom Bootstrap overrides */
+.btn-primary {
+    background-color: var(--zoolirante-orange);
+    border-color: var(--zoolirante-orange);
+}
+
+.btn-primary:hover {
+    background-color: var(--zoolirante-dark-teal);
+    border-color: var(--zoolirante-dark-teal);
+}
+
+.btn-outline-primary {
+    color: var(--zoolirante-orange);
+    border-color: var(--zoolirante-orange);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--zoolirante-orange);
+    border-color: var(--zoolirante-orange);
+}
+
+.text-primary {
+    color: var(--zoolirante-orange) !important;
+}
+
+.bg-primary {
+    background-color: var(--zoolirante-orange) !important;
+}
+
+/* Hero section */
+.hero-section {
+    background: linear-gradient(rgba(230, 87, 34, 0.8), rgba(139, 69, 19, 0.8)),
+                url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 300"><rect fill="%23F4A460" width="1200" height="300"/><path fill="%23E65722" d="M0,100 Q300,50 600,100 T1200,100 V300 H0 V100Z"/></svg>');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    padding: 6rem 0 4rem;
+    margin-top: 0;
+}
