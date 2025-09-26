@@ -7,6 +7,9 @@
   align-items: center;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* softer shadow */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
 }
 
 .navbar-brand {

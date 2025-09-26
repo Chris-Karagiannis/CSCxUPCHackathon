@@ -20,15 +20,71 @@
             border: 3px solid transparent;
             text-align: center;
         }
+        
+        .logo-showcase {
+        position: absolute;
+        bottom: 0; 
+        left: 0;
+        width: 100%;
+        overflow: hidden;
+        padding: 0.5rem 0;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(6px);
+        }
+
+        .logos-wrapper {
+        display: flex;
+        gap: 2rem;
+        animation: scrollLogos 15s linear infinite; /* adjust speed */
+        }
+
+        .logo-item img {
+        max-height: 50px;
+        object-fit: contain;
+        transition: transform 0.3s;
+        }
+
+        .logo-item img:hover {
+        transform: scale(1.1);
+        }
+
+        /* Smooth infinite scroll */
+        @keyframes scrollLogos {
+        0% {
+            transform: translateX(0);
+        }
+        100% {
+            transform: translateX(-50%);
+        }
+        }
     </style>
 
 </head>
 <body>
     <div>
-        <div class="hero-section text-center mb-4">
-            <h1>Browse Page</h1>
-            <h2>Welcome to the Browse Page</h2>
-            <p>Explore our collection of items.</p>
+        <div class="hero-section text-center mb-4 position-relative">
+            <h1>Browse Our Collection</h1>
+            <p class="lead">Discover a wide range of products from top brands.</p>
+            <!-- Logo Showcase floating bar -->
+            <div class="logo-showcase">
+                <div class="logos-wrapper">
+                {% for brand in brands %}
+                    <a href="#" class="logo-item">
+                        <img src="{{ brand.img }}" alt="{{ brand.name }}">
+                    </a>
+                {% endfor %}
+                {% for brand in brands %}
+                    <a href="#" class="logo-item">
+                        <img src="{{ brand.img }}" alt="{{ brand.name }}">
+                    </a>
+                {% endfor %}
+                {% for brand in brands %}
+                    <a href="#" class="logo-item">
+                        <img src="{{ brand.img }}" alt="{{ brand.name }}">
+                    </a>
+                {% endfor %}
+                </div>
+            </div>
         </div>
         <form action="{{ url_for('browse')}}" onsubmit="searchItems()" id="query" method="GET">
             <div class="row mb-1 justify-content-center">

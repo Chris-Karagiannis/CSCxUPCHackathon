@@ -12,8 +12,9 @@ def index():
 def browse():
     search_query = request.args.get("search", "")
     conn = sqlite3.connect("product_data.db")
-    
     c = conn.cursor()
+
+    # -- Product Search --
     like_pattern = f"%{search_query}%"
     c.execute(
         "SELECT Product.id, title, type, Product.link, Product.img, price, Brand.img, Brand.name FROM Product "\
@@ -22,15 +23,23 @@ def browse():
         (like_pattern, like_pattern)
     )
     rows = c.fetchall()
-    conn.close()
     
     items_list = [
         {"id": row[0], "title": row[1], "type": row[2], "link": row[3], "img": row[4], "price": row[5], "brand_logo": row[6], "brand_name": row[7]}
         for row in rows
     ]
 
-    return render_template("browse.jinja", items=items_list)
+    # -- Brand List --
+    c.execute("SELECT id, name, img FROM Brand")
+    brands_rows = c.fetchall()
+
+    brands_list = [
+        {"id": row[0], "name": row[1], "img": row[2]} for row in brands_rows
+    ]
+
+    conn.close()
     
+    return render_template("browse.jinja", items=items_list, brands=brands_list)
     
 
 @app.route("/Cart")
