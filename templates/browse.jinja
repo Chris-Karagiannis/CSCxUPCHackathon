@@ -92,15 +92,10 @@
 <body>
     <div>
         <div class="hero-section text-center mb-4 position-relative">
-        {# Compare Button #}
-        <div class="bg-secondary text-center p-4">
-            <div class="container mt-4">
-                <button type="button" class="btn btn-primary" id="compareButton" data-bs-toggle="modal" data-bs-target="#compareModal">Compare Selected Items</button>
-            </div>
-
-                {# modal approach for comparison  #}
+            {# modal approach for comparison  #}
 
             <!-- Modal -->
+            <div class="text-center p-4">
             <div class="modal fade" id="compareModal" tabindex="-1" aria-labelledby="compareModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">   <!-- not modal-dialog-lg -->
                 <div class="modal-content">
@@ -119,9 +114,11 @@
             
 
         <div class="bg-secondary text-center p-4">
-            <div class="container mt-4">
-                <button id="compareButton" class="btn btn-primary " style="display:none;" >Compare Selected Items</button>
+            {# Compare Button #}
+            <div class="container">
+                <button type="button" class="btn btn-primary" id="compareButton" data-bs-toggle="modal" data-bs-target="#compareModal" style="display: none;">Compare Selected Items</button>
             </div>
+
             <h1 class="text-light">Browse Our Collection</h1>
             <p class="text-light">Discover a wide range of products from top brands.</p>
             <!-- Logo Showcase floating bar -->
@@ -370,7 +367,7 @@
       .filter(Boolean);
 
     const th      = items.map((_, i) => `<th class="text-center">Item ${i + 1}</th>`).join('');
-    const rowImg  = items.map(it => `<td class="text-center"><img src="${it.img}" class="img-fluid" style="max-height:120px;object-fit:cover;"></td>`).join('');
+    const rowImg  = items.map(it => `<td class="text-center"><img src="${it.img}" class="img-fluid" style="max-height:75vh;object-fit:cover;"></td>`).join('');
     const rowName = items.map(it => `<td class="fw-semibold">${it.title}</td>`).join('');
     const rowType = items.map(it => `<td>${it.type || '-'}</td>`).join('');
     const rowBrand= items.map(it => `<td>${it.brand_name || '-'}</td>`).join('');
@@ -380,7 +377,6 @@
     body.innerHTML = `
       <div class="table-responsive">
         <table class="table table-bordered align-middle mb-0">
-          <thead><tr>${th}</tr></thead>
           <tbody>
             <tr>${rowImg}</tr>
             <tr>${rowName}</tr>
