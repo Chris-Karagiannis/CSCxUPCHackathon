@@ -5,20 +5,18 @@ from selenium.webdriver.common.keys import Keys
 import time
 from scrape import Scrape
 
-class CottonOn(Scrape):
+class Factorie(Scrape):
     def __init__(self):
-        super().__init__(2)
+        super().__init__(4)
 
     def run(self):
-        self.scrape("men/mens-clothing/mens-tops/", "Tops")
-        self.scrape("women/womens-clothing/womens-tops/", "Tops")
-        self.scrape("men/men-denim/mens-jeans-1/", "Bottoms")
-        self.scrape("men/mens-clothing/mens-pants/", "Bottoms")
-        self.scrape("women/womens-clothing/womens-pants/", "Bottoms")
-        self.scrape("women/womens-clothing/womens-jeans/", "Bottoms")
+        self.scrape("mens-tops/", "Tops")
+        self.scrape("mens-bottoms/", "Bottoms")
+        self.scrape("womens-tops/", "Tops")
+        self.scrape("womens-bottoms/", "Bottoms")
 
     def scrape(self, page, clothing_type):
-        url = "https://cottonon.com/AU/co/" + page
+        url = "https://factorie.com.au/" + page
         driver = webdriver.Chrome()
         driver.get(url)
 
@@ -31,7 +29,7 @@ class CottonOn(Scrape):
             except Exception as e:
                 print(f"An error occurred: {e}")
                 break
-        
+
         
         soup = BeautifulSoup(driver.page_source, "html.parser")
         products = soup.find_all("div", class_="product-tile")
@@ -45,12 +43,11 @@ class CottonOn(Scrape):
             item["img"] = product.find("img")["src"]
             item["price"] = product.find("span", class_="product-sales-price").text.replace("\n", "").replace(" ", "")[1:]
             item["type"] = clothing_type
-
+            
             if item not in items:
                 items.append(item)
             
         for item in items:
             self.add_to_db(item)
 
-
-CottonOn().run()
+Factorie().run()
