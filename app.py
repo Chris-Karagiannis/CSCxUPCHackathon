@@ -160,17 +160,6 @@ def ensure_cart():
         session["cart"] = {}
     return session["cart"]
 
-@app.post("/mockups/save")
-def mockup_save():
-    data = request.get_json()
-    with get_db() as db:
-        mid = db.insert("INSERT INTO mockups (title, template) VALUES (?, ?)", (data["title"], data["template"]))
-    for s in data["slots"]:
-        with get_db() as db:
-            db.insert("""INSERT INTO mockup_slots (mockup_id, slot_key, product_id, x, y, w, h) VALUES (?,?,?,?,?,?)""",
-                    (mid, s["slot"], s.get("product_id"), None, None, None, None))
-    return jsonify({"ok": True, "id": mid})
-
 @app.get("/api/products")
 def api_products():
     """
