@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Contact Us</title>
+    <style>
+        .contact-link {
+            display: block;
+            width: 100%;
+            padding: 0.375rem 0.75rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-radius: 0.375rem;
+            text-decoration: none;
+            overflow-wrap: break-word;
+        }
+        .contact-link:hover {
+            background-color: #dee2e6;
+            color: #000;
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    {% include 'shared/navBar.jinja' %}
+
+    <div class="container my-5">
+        <h1 class="mb-4 text-center">Contact Us</h1>
+        <p class="text-center">If you have any questions, feedback, or need assistance, feel free to reach out to us:</p>
+
+        <div class="fw-bold">
+            <div class="mb-3">
+                <label class="form-label">Ashish</label>
+                <a href="https://github.com/AshishBehal2004" class="contact-link" target="_blank">https://github.com/AshishBehal2004</a>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Chris</label>
+                <a href="https://github.com/Chris-Karagiannis" class="contact-link" target="_blank">https://github.com/Chris-Karagiannis</a>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Kim</label>
+                <a href="https://github.com/ChhayZ7" class="contact-link" target="_blank">https://github.com/ChhayZ7</a>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Raj</label>
+                <a href="https://github.com/LostRavenOP" class="contact-link" target="_blank">https://github.com/LostRavenOP</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
