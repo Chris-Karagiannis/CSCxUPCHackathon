@@ -162,6 +162,15 @@
         </div>
 
         <hr>
+
+        {% if items | length == 0 %}
+            <p class="text-center alert alert-warning">No items found.</p>
+        {% else %}
+            <div>
+                <span class="ms-3 text-muted">Showing {{ items|length }} items</span>
+            </div>
+        {% endif %}
+
         <div class="item-grid row g-3 ms-2 pt-3 me-2" id="itemGrid">
             {% for item in items %}
                 <div class="col-md-4">
@@ -200,9 +209,8 @@
             {% endfor %}
         </div>
         
-        {% if items | length == 0 %}
-            <p class="text-center">No items found.</p>
-        {% else %}
+        {% if items | length != 0 %}
+            <!-- No pagination if no items -->
             <div class="d-flex justify-content-center mt-2 mb-4" id="paginationControls"></div>
         {% endif %}
     </div>
