@@ -8,6 +8,9 @@ app.secret_key = "mySecret"
 def index():
     return render_template("index.jinja")
 
+@app.route("/contact")
+def contact():
+    return render_template("contact.jinja")
 
 @app.route("/browse")
 def browse():
