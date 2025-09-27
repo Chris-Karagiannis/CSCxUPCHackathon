@@ -180,7 +180,14 @@
                         <h5 class="item-title mt-2 text-truncate">{{ item.title }}</h5>
                         <p class="item-type">{{ item.type }}</p>
                         <p class="fw-bold">${{ "%.2f"|format(item.price) }}</p>
-                        <a href="{{ item.link }}" target="_blank" class="btn btn-primary">View Details</a>
+                        <a href="{{ item.link }}" target="_blank" class="btn btn-primary btn-view"
+                            data-id="{{ item.id }}"
+                            data-title="{{ item.title }}"
+                            data-img="{{ item.img }}"
+                            data-price="{{ item.price }}"
+                            data-link="{{ item.link }}">
+                            View Details
+                        </a>
                         <a href="#" class="btn btn-secondary btn-add" data-id="{{ item.id }}"
                             data-title="{{ item.title }}"
                             data-img="{{ item.img }}"
@@ -375,24 +382,28 @@
 
     // Attach click listeners to Add to Cart buttons
     document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.btn-add').forEach(button => {
-            button.addEventListener('click', e => {
-                // Optional: prevent link navigation if needed
+        document.querySelectorAll('.btn-add, .btn-view').forEach(button => {
+        button.addEventListener('click', e => {
+            const productData = {
+                id: button.dataset.id,
+                title: button.dataset.title,
+                img: button.dataset.img,
+                price: button.dataset.price,
+                link: button.dataset.link
+            };
+
+            // Add to recently viewed for both buttons
+            trackRecentlyViewed(productData.id, productData);
+            showRecentlyViewed();
+
+            if (button.classList.contains('btn-add')) {
+                // Stop navigation for Add to Cart
                 e.preventDefault();
-
-                const productData = {
-                    id: button.dataset.id,
-                    title: button.dataset.title,
-                    img: button.dataset.img,
-                    price: button.dataset.price,
-                    link: button.dataset.link
-                };
-
-                trackRecentlyViewed(productData.id, productData);
-                showRecentlyViewed();
-
-            });
+                // (your add-to-cart logic can stay here)
+            }
         });
+    });
+
 
         // Initialize Recently Viewed section on page load
         showRecentlyViewed();
