@@ -1,9 +1,9 @@
 const catalog = document.getElementById("catalog");
-  const stageSlots = [...document.querySelectorAll('#stage .slot')];
+const stageSlots = [...document.querySelectorAll('#stage .slot')];
 
-  // Safer: encode product JSON for attribute
-  function encodeProduct(p){ return encodeURIComponent(JSON.stringify(p)); }
-  function decodeProduct(s){ return JSON.parse(decodeURIComponent(s)); }
+// Safer: encode product JSON for attribute
+function encodeProduct(p){ return encodeURIComponent(JSON.stringify(p)); }
+function decodeProduct(s){ return JSON.parse(decodeURIComponent(s)); }
 
   function productCard(p){
     return `
