@@ -79,6 +79,9 @@ def browse():
     return render_template("browse.jinja", items=items_list, brands=brands_list)
 
     
+@app.route("/Build-Your-Outfit")
+def Build_Your_Outfit():
+    return render_template("build_your_outfit.jinja")
 
 @app.route("/Cart")
 def Cart():
@@ -108,6 +111,7 @@ def Cart():
             })
     return render_template("cart.jinja", items=products, subtotal=subtotal)
 
+# Adding to cart logic
 @app.post("/cart/add")
 def cart_add():
     data = request.get_json(silent=True) or request.form
@@ -126,7 +130,7 @@ def cart_add():
 
     return jsonify({"ok": True, "cartCount": sum(int(v) for v in cart.values())})
 
-
+# Update cart logic
 @app.post("/cart/update")
 def cart_update():
     data = request.get_json(silent=True) or request.form
@@ -145,6 +149,7 @@ def cart_update():
     session["cart"] = cart
     return jsonify({"ok": True, "cartCount": sum(int(v) for v in cart.values())})
 
+# Cart clearing logic
 @app.post("/cart/clear")
 def cart_clear():
     session["cart"] = {}
@@ -159,6 +164,49 @@ def ensure_cart():
     if "cart" not in session:
         session["cart"] = {}
     return session["cart"]
+
+# Request products data thought api
+@app.get("/api/products")
+def api_products():
+    qstr = (request.args.get("q") or "").strip()
+    brand = (request.args.get("brand") or "").strip()
+    limit = request.args.get("limit", default=30, type=int)
+
+    # clamp to sensible bounds
+    limit = max(1, min(limit, 100))
+
+
+    where = []
+    params = []
+
+    if qstr:
+        where.append("(title LIKE ? OR brand LIKE ?)")
+        like = f"%{qstr}%"
+        params.extend([like, like])
+
+    if brand:
+        where.append("brand = ?")
+        params.append(brand)
+
+    where_sql = ("WHERE " + " AND ".join(where)) if where else ""
+
+    rows = q(f"""
+        SELECT p.id as id, title as title, price, p.img as img, p.link as link, p.brand as brand, b.img as brand_logo FROM Product as p JOIN Brand as b ON p.brand = b.id
+        {where_sql}
+        LIMIT ?
+    """, params + [limit])
+
+    items = [dict(r) for r in rows]
+
+    return jsonify({
+        "ok": True,
+        "items": items,
+        "limit": limit,
+    })
+
+# Run a SQL query that returns multiple rows.
+def q(sql, params=()):
+    return get_db().execute(sql, params).fetchall()
 
 
 if __name__ == "__main__":

@@ -1,5 +1,4 @@
-<!-- templates/cart.html -->
-<!doctype html>
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -11,6 +10,7 @@
 <div class="container py-4">
   <h1 class="mb-4 pt-5">Your Cart</h1>
 
+  <!-- Check if there is any item available to be drag -->
   {% if items|length == 0 %}
     <div class="alert alert-info">Your cart is empty. <a class="btn btn-primary" href="{{ url_for('browse') }}">Browse products</a></div>
   {% else %}
@@ -67,50 +67,49 @@
   </div>
   {% endif %}
 </div>
-
 <script>
-async function postUpdate(pid, qty) {
-  const res = await fetch("{{ url_for('cart_update') }}", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ product_id: Number(pid), qty: Number(qty) })
+  async function postUpdate(pid, qty) {
+    const res = await fetch("{{ url_for('cart_update') }}", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify({ product_id: Number(pid), qty: Number(qty) })
+    });
+    return res.json();
+  }
+  // Update item quantity with button
+  document.querySelectorAll(".btn-qty").forEach(b => {
+    b.addEventListener("click", async () => {
+      const id = b.dataset.id;
+      const delta = Number(b.dataset.delta);
+      const input = document.querySelector(`.qty-input[data-id="${id}"]`);
+      const next = Math.max(0, Number(input.value || 0) + delta);
+      const data = await postUpdate(id, next);
+      if (data.ok) location.reload();
+    });
   });
-  return res.json();
-}
-
-document.querySelectorAll(".btn-qty").forEach(b => {
-  b.addEventListener("click", async () => {
-    const id = b.dataset.id;
-    const delta = Number(b.dataset.delta);
-    const input = document.querySelector(`.qty-input[data-id="${id}"]`);
-    const next = Math.max(0, Number(input.value || 0) + delta);
-    const data = await postUpdate(id, next);
+  // Update item quantity with input
+  document.querySelectorAll(".qty-input").forEach(inp => {
+    inp.addEventListener("change", async () => {
+      const id = inp.dataset.id;
+      const next = Math.max(0, Number(inp.value || 0));
+      const data = await postUpdate(id, next);
+      if (data.ok) location.reload();
+    });
+  });
+  // Remove a row logic
+  document.querySelectorAll(".btn-remove").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const data = await postUpdate(id, 0);
+      if (data.ok) location.reload();
+    });
+  });
+  // Clear everything from cart
+  document.getElementById("clear-cart")?.addEventListener("click", async () => {
+    const res = await fetch("{{ url_for('cart_clear') }}", { method: "POST" });
+    const data = await res.json();
     if (data.ok) location.reload();
   });
-});
-
-document.querySelectorAll(".qty-input").forEach(inp => {
-  inp.addEventListener("change", async () => {
-    const id = inp.dataset.id;
-    const next = Math.max(0, Number(inp.value || 0));
-    const data = await postUpdate(id, next);
-    if (data.ok) location.reload();
-  });
-});
-
-document.querySelectorAll(".btn-remove").forEach(btn => {
-  btn.addEventListener("click", async () => {
-    const id = btn.dataset.id;
-    const data = await postUpdate(id, 0);
-    if (data.ok) location.reload();
-  });
-});
-
-document.getElementById("clear-cart")?.addEventListener("click", async () => {
-  const res = await fetch("{{ url_for('cart_clear') }}", { method: "POST" });
-  const data = await res.json();
-  if (data.ok) location.reload();
-});
 </script>
 </body>
 </html>
