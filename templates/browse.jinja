@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">
+    
+   
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}">
     <title>Browse</title>
     {% include 'shared/navBar.jinja' %}
@@ -92,11 +95,35 @@
 
 </head>
 <body>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+        crossorigin="anonymous"></script>
+
     <div>
         <div class="hero-section text-center mb-4 position-relative">
+        {# Compare Button #}
             <div class="container mt-4">
-                <button id="compareButton" class="btn btn-primary " style="display:none;" >Compare Selected Items</button>
+                <button type="button" class="btn btn-primary" id="compareButton" data-bs-toggle="modal" data-bs-target="#compareModal" >Compare Selected Items</button>
             </div>
+
+                {# modal approach for comparison  #}
+
+            <!-- Modal -->
+            <div class="modal fade" id="compareModal" tabindex="-1" aria-labelledby="compareModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">   <!-- not modal-dialog-lg -->
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="compareModalLabel">Compare Items</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body" id="compareModalBody">Select Items to Compare</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+            </div>
+
             <h1>Browse Our Collection</h1>
             <p class="lead">Discover a wide range of products from top brands.</p>
             <!-- Logo Showcase floating bar -->
@@ -155,8 +182,8 @@
                 <div class="col-md-4">
                     <div class="item-card p-1">
                         <div class="justify-content-start form-check text-start ms-2">
-                            <input type="checkbox" id="compare" class="form-check-input compare-checkbox" data-id="{{ item.id }}">
-                            <label for="compare" class="form-check-label">Compare</label>
+                            <input type="checkbox" id="compare-{{item.id}}" class="form-check-input compare-checkbox" data-id="{{ item.id }}">
+                            <label for="compare-{{item.id}}" class="form-check-label">Compare</label>
                         </div>
                         <div class="image-wrapper position-relative">
                             <a class="badge position-absolute top-0 start-0 m-2" href="{{ item.brand_link }}" target="_blank" title="Go to {{ item.brand_name }} website">
@@ -181,7 +208,15 @@
             <div class="d-flex justify-content-center mt-2 mb-4" id="paginationControls"></div>
         {% endif %}
     </div>
+
+
+
+
 </body>
+<script>
+    window.ITEMS_BY_ID = Object.fromEntries(
+        {{ items| tojson}}.map(i => [String(i.id), i])
+        );</script>
 <script>
     function searchItems(){
         let input = document.getElementById("searchBar").value
@@ -197,7 +232,9 @@
             }
         }
     }
-
+    
+        
+    
     function paginateItems(itemsPerPage) {
         const items = document.querySelectorAll('.item-card');
         const totalPages = Math.ceil(items.length / itemsPerPage);
@@ -289,7 +326,52 @@
             }
         });
     });
-    
+
+
+  const MAX_COMPARE = 4;
+
+  compareButton.addEventListener('click', () => {
+    const body = document.getElementById('compareModalBody');
+
+    const ids = [...document.querySelectorAll('.compare-checkbox:checked')]
+      .map(cb => cb.dataset.id);
+
+    if (ids.length < 2) {
+      body.innerHTML = `<div class="text-danger">Pick at least two items to compare.</div>`;
+      return;
+    }
+
+    const items = ids.slice(0, MAX_COMPARE)
+      .map(id => window.ITEMS_BY_ID[String(id)])
+      .filter(Boolean);
+
+    const th      = items.map((_, i) => `<th class="text-center">Item ${i + 1}</th>`).join('');
+    const rowImg  = items.map(it => `<td class="text-center"><img src="${it.img}" class="img-fluid" style="max-height:120px;object-fit:cover;"></td>`).join('');
+    const rowName = items.map(it => `<td class="fw-semibold">${it.title}</td>`).join('');
+    const rowType = items.map(it => `<td>${it.type || '-'}</td>`).join('');
+    const rowBrand= items.map(it => `<td>${it.brand_name || '-'}</td>`).join('');
+    const rowPrice= items.map(it => `<td class="fw-bold">$${Number(it.price).toFixed(2)}</td>`).join('');
+    const rowLink = items.map(it => `<td><a href="${it.link}" target="_blank" class="btn btn-sm btn-outline-primary">View</a></td>`).join('');
+
+    body.innerHTML = `
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle mb-0">
+          <thead><tr>${th}</tr></thead>
+          <tbody>
+            <tr>${rowImg}</tr>
+            <tr>${rowName}</tr>
+            <tr>${rowType}</tr>
+            <tr>${rowBrand}</tr>
+            <tr>${rowPrice}</tr>
+            <tr>${rowLink}</tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="small text-muted mt-2">Comparing ${items.length} item(s).</div>
+    `;
+  });
+
+
 
 </script>
 </html>
