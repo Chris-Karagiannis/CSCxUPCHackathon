@@ -158,6 +158,5 @@ def ensure_cart():
     return session["cart"]
 
 
-
 if __name__ == "__main__":
     app.run(debug=True)
