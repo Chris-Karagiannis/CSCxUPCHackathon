@@ -366,10 +366,7 @@
     const ids = [...document.querySelectorAll('.compare-checkbox:checked')]
       .map(cb => cb.dataset.id);
 
-    if (ids.length < 2) {
-      body.innerHTML = `<div class="text-danger">Pick at least two items to compare.</div>`;
-      return;
-    }
+    
 
     const items = ids.slice(0, MAX_COMPARE)
       .map(id => window.ITEMS_BY_ID[String(id)])
