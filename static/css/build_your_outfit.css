@@ -1,4 +1,8 @@
 #stage .slot{
     position: absolute; min-height: 120px;border:2px dashed #e2e2e2;
-    
+    border-radius:16px; background:#ffffffaa; backdrop-filter: blur(2px);
+    transition: border-color .15s ease;
 }
+#stage .slot.filled { border-style: solid;}
+#stage .slot.highlight {border-color:#f59e0b; }
+.draggable-card { cursor: grab;}
