@@ -7,7 +7,7 @@ from scrape import Scrape
 
 class Nike(Scrape):
     def __init__(self):
-        super().__init__("Nike")
+        super().__init__(0)
 
     def run(self):
         # Note: Need to whole brand in table before running or will be double ups
@@ -63,5 +63,5 @@ class Nike(Scrape):
         for item in items:
             self.add_to_db(item)
 
-
+Nike().run()
             
