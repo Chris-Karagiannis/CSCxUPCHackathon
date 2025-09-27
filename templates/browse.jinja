@@ -33,22 +33,22 @@
         }
         
         .logo-showcase {
-        position: absolute;
+        
         bottom: 0; 
         left: 0;
         width: 100%;
         overflow: hidden;
         padding: 0.5rem 0;
-        background: rgba(255, 255, 255, 0.8);
+        background: white;
         backdrop-filter: blur(6px);
         }
 
         .logos-wrapper {
-        display: flex;
-        gap: 2rem;
-        animation: scrollLogos 15s linear infinite;
-        width: max-content;      /* only take up what’s needed */
-        will-change: transform;  /* performance hint */
+            display: flex;
+            gap: 2rem;
+            animation: scrollLogos 30s linear infinite;
+            width: max-content;      /* only take up what’s needed */
+            will-change: transform;  /* performance hint */
         }
 
         .logo-item img {
@@ -100,6 +100,7 @@
     <div>
         <div class="hero-section text-center mb-4 position-relative">
         {# Compare Button #}
+        <div class="bg-secondary text-center p-4">
             <div class="container mt-4">
                 <button type="button" class="btn btn-primary" id="compareButton" data-bs-toggle="modal" data-bs-target="#compareModal" >Compare Selected Items</button>
             </div>
@@ -122,9 +123,10 @@
                 </div>
             </div>
             </div>
-
-            <h1>Browse Our Collection</h1>
-            <p class="lead">Discover a wide range of products from top brands.</p>
+            
+            <h1 class="text-light">Browse Our Collection</h1>
+            <p class="text-light">Discover a wide range of products from top brands.</p>
+            
             <!-- Logo Showcase floating bar -->
             <div class="logo-showcase">
                 <div class="logos-wrapper">
@@ -138,7 +140,7 @@
                 </div>
             </div>
         </div>
-        <form action="{{ url_for('browse') }}" method="GET" class="d-flex justify-content-between align-items-center px-3" style="width: 60%; max-width: 1200px;">
+        <form action="{{ url_for('browse') }}" method="GET" class="d-flex align-items-center p-3">
     
             <!-- Search Bar -->
             <div class="input-group" style="max-width: 400px;">
@@ -177,11 +179,12 @@
         </form>
 
         <div id="recentlyViewed" class="recently-viewed-container">
-            <a class="m-3 text-muted fw-bold" role="button" data-bs-toggle="collapse" href="#recentlyViewedCollapse" 
+            <a class="mb-3 mx-3 btn btn-secondary" role="button" data-bs-toggle="collapse" href="#recentlyViewedCollapse" 
             aria-expanded="false" aria-controls="recentlyViewedCollapse">
-            Recently Viewed <span class="text" id="collapseArrow">&#11207;</span>
+                Recently Viewed <span class="text" id="collapseArrow">&#11207;</span>
             </a>
-            <div class="collapse m-4" id="recentlyViewedCollapse">
+
+            <div class="collapse" id="recentlyViewedCollapse">
                 <div class="recent-items d-flex gap-2" id="recent-items-container"></div>
             </div>
         </div>
@@ -284,13 +287,14 @@
             const btn = (text, page) => {
                 const b = document.createElement('button');
                 b.textContent = text;
-                b.className = 'btn btn-outline-primary mx-1';
+                b.className = 'btn btn-secondary mx-1';
                 if (page === currentPage) b.classList.add('active');
                 b.disabled = page < 1 || page > totalPages;
                 b.addEventListener('click', () => {
                     currentPage = page;
                     showPage(currentPage);
                     createControls();
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
                 });
                 container.appendChild(b);
             };
