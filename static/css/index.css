@@ -1,0 +1,59 @@
+/* Hero Section */
+.hero {
+    background: linear-gradient(135deg, #006aff, #00aaf9);
+    color: white;
+    text-align: center;
+    padding: 80px 20px;
+}
+
+.hero h1{
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.hero p{
+    max-width: 600px;
+    margin: 15px auto;
+    font-size: 1.2 rem;
+}
+
+.hero .btn{
+    font-weight: 600;
+}
+
+/* About Us */
+.about {
+    background: #fff8f0;
+    padding: 60px 20px;
+}
+
+.about h1{
+    color: royalblue;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.about p{
+    font-size: 1.05rem;
+    color: #444;
+}
+
+/* Contact */
+.contact{
+    background:  #0d1b2a;
+    color: white;
+    padding: 60px 20px;
+}
+
+.contact h1{
+    color: #00aaf9;
+    font-weight: bold;
+    margin-bottom: 30px;
+}
+
+.contact p{
+    font-size: 1.1rem;
+    color: #00aaf9;
+}
+
+
