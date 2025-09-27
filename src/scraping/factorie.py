@@ -50,5 +50,4 @@ class Factorie(Scrape):
         for item in items:
             self.add_to_db(item)
 
-
 Factorie().run()

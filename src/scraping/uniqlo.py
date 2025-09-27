@@ -53,5 +53,4 @@ class Uniqlo(Scrape):
         for item in items:
             self.add_to_db(item)
 
-uniqlo = Uniqlo()
-uniqlo.run()
+Uniqlo().run()
