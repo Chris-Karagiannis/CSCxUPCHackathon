@@ -91,6 +91,33 @@
 </head>
 <body>
     <div>
+        <div class="hero-section text-center mb-4 position-relative">
+        {# Compare Button #}
+        <div class="bg-secondary text-center p-4">
+            <div class="container mt-4">
+                <button type="button" class="btn btn-primary" id="compareButton" data-bs-toggle="modal" data-bs-target="#compareModal">Compare Selected Items</button>
+            </div>
+
+                {# modal approach for comparison  #}
+
+            <!-- Modal -->
+            <div class="modal fade" id="compareModal" tabindex="-1" aria-labelledby="compareModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">   <!-- not modal-dialog-lg -->
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="compareModalLabel">Compare Items</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body" id="compareModalBody">Select Items to Compare</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+                </div>
+            </div>
+            </div>
+            
+
         <div class="bg-secondary text-center p-4">
             <div class="container mt-4">
                 <button id="compareButton" class="btn btn-primary " style="display:none;" >Compare Selected Items</button>
@@ -174,8 +201,8 @@
                 <div class="col-md-4">
                     <div class="item-card p-1">
                         <div class="justify-content-start form-check text-start ms-2">
-                            <input type="checkbox" id="compare" class="form-check-input compare-checkbox" data-id="{{ item.id }}">
-                            <label for="compare" class="form-check-label">Compare</label>
+                            <input type="checkbox" id="compare-{{item.id}}" class="form-check-input compare-checkbox" data-id="{{ item.id }}">
+                            <label for="compare-{{item.id}}" class="form-check-label">Compare</label>
                         </div>
                         <div class="image-wrapper position-relative">
                             <a class="badge position-absolute top-0 start-0 m-2" href="{{ item.brand_link }}" target="_blank" title="Go to {{ item.brand_name }} website">
@@ -213,6 +240,12 @@
         {% endif %}
     </div>
 </body>
+<script>
+    window.ITEMS_BY_ID = Object.fromEntries(
+        {{ items| tojson}}.map(i => [String(i.id), i])
+        );</script>
+
+
 <script>
     function searchItems(){
         let input = document.getElementById("searchBar").value
@@ -455,5 +488,6 @@
         // Initialize Recently Viewed section on page load
         showRecentlyViewed();
     });
+
 </script>
 </html>
