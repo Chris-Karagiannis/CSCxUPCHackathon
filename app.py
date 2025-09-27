@@ -76,6 +76,9 @@ def browse():
     return render_template("browse.jinja", items=items_list, brands=brands_list)
 
     
+@app.route("/Build-Your-Outfit")
+def Build_Your_Outfit():
+    return render_template("build_your_outfit.jinja")
 
 @app.route("/Cart")
 def Cart():
@@ -168,6 +171,91 @@ def mockup_save():
                     (mid, s["slot"], s.get("product_id"), None, None, None, None))
     return jsonify({"ok": True, "id": mid})
 
+@app.get("/api/products")
+def api_products():
+    """
+    Query params:
+      - q: search text (matches title/brand)
+      - brand: exact brand filter
+      - min_price, max_price: numeric filters
+      - order: 'new' | 'price_asc' | 'price_desc' (default: 'new')
+      - limit: 1..100 (default 30)
+      - offset: 0.. (default 0)
+    """
+    qstr = (request.args.get("q") or "").strip()
+    brand = (request.args.get("brand") or "").strip()
+    min_price = request.args.get("min_price", type=float)
+    max_price = request.args.get("max_price", type=float)
+    order = (request.args.get("order") or "new").strip().lower()
+    limit = request.args.get("limit", default=30, type=int)
+    offset = request.args.get("offset", default=0, type=int)
+
+    # clamp to sensible bounds
+    limit = max(1, min(limit, 100))
+    offset = max(0, offset)
+
+    where = []
+    params = []
+
+    if qstr:
+        where.append("(title LIKE ? OR brand LIKE ?)")
+        like = f"%{qstr}%"
+        params.extend([like, like])
+
+    if brand:
+        where.append("brand = ?")
+        params.append(brand)
+
+    if min_price is not None:
+        where.append("price >= ?")
+        params.append(min_price)
+
+    if max_price is not None:
+        where.append("price <= ?")
+        params.append(max_price)
+
+    where_sql = ("WHERE " + " AND ".join(where)) if where else ""
+
+    if order == "price_asc":
+        order_sql = "ORDER BY price ASC, id DESC"
+    elif order == "price_desc":
+        order_sql = "ORDER BY price DESC, id DESC"
+    else:
+        # 'new' or unknown → newest first (by id; swap to created_at if you have it)
+        order_sql = "ORDER BY id DESC"
+
+    # total count for pagination
+    total_row = one(f"SELECT COUNT(*) AS c FROM Product {where_sql}", params)
+    total = total_row["c"] if total_row else 0
+
+    rows = q(f"""
+        SELECT p.id as id, title as title, price, p.img as img, p.link as link, p.brand as brand, b.img as brand_logo FROM Product as p JOIN Brand as b ON p.brand = b.id
+        {where_sql}
+        {order_sql}
+        LIMIT ? OFFSET ?
+    """, params + [limit, offset])
+
+    items = [dict(r) for r in rows]
+
+    # Include basic pagination hints
+    next_offset = offset + limit if (offset + limit) < total else None
+    prev_offset = max(0, offset - limit) if offset > 0 else None
+
+    return jsonify({
+        "ok": True,
+        "items": items,
+        "total": total,
+        "limit": limit,
+        "offset": offset,
+        "next_offset": next_offset,
+        "prev_offset": prev_offset
+    })
+
+def q(sql, params=()):
+    return get_db().execute(sql, params).fetchall()
+
+def one(sql, params=()):
+    return get_db().execute(sql, params).fetchone()
 
 if __name__ == "__main__":
     app.run(debug=True)

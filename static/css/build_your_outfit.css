@@ -1,5 +1,5 @@
 #stage .slot{
-    position: absolute; min-height: 120px;border:2px dashed #e2e2e2;
+    position: absolute; min-height: 200px;border:2px dashed #e2e2e2;
     border-radius:16px; background:#ffffffaa; backdrop-filter: blur(2px);
     transition: border-color .15s ease;
 }

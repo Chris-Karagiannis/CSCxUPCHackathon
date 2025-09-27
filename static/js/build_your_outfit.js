@@ -63,8 +63,9 @@ document.getElementById('saveMockup').onclick = async () => {
 
 // Load catalog (server returns your product fields)
 (async () => {
-    const res = await fetch("/api/products?limit=30")
+    const res = await fetch("/api/products")
     const items = await res.json();
+    console.log(items)
     catalog.innerHTML = items.map(productCard).join("");
 })();
 
