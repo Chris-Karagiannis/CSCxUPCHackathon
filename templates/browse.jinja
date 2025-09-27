@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    {# <link rel="stylesheet" href="{{ url_for('static', filename='css/browse.css') }}"> #}
     <title>Browse</title>
     {% include 'shared/navBar.jinja' %}
     
@@ -322,6 +321,46 @@
             }
         });
     });
+
+  const MAX_COMPARE = 4;
+
+  compareButton.addEventListener('click', () => {
+    const body = document.getElementById('compareModalBody');
+
+    const ids = [...document.querySelectorAll('.compare-checkbox:checked')]
+      .map(cb => cb.dataset.id);
+
+    
+
+    const items = ids.slice(0, MAX_COMPARE)
+      .map(id => window.ITEMS_BY_ID[String(id)])
+      .filter(Boolean);
+
+    const th      = items.map((_, i) => `<th class="text-center">Item ${i + 1}</th>`).join('');
+    const rowImg  = items.map(it => `<td class="text-center"><img src="${it.img}" class="img-fluid" style="max-height:120px;object-fit:cover;"></td>`).join('');
+    const rowName = items.map(it => `<td class="fw-semibold">${it.title}</td>`).join('');
+    const rowType = items.map(it => `<td>${it.type || '-'}</td>`).join('');
+    const rowBrand= items.map(it => `<td>${it.brand_name || '-'}</td>`).join('');
+    const rowPrice= items.map(it => `<td class="fw-bold">$${Number(it.price).toFixed(2)}</td>`).join('');
+    const rowLink = items.map(it => `<td><a href="${it.link}" target="_blank" class="btn btn-sm btn-outline-primary">View</a></td>`).join('');
+
+    body.innerHTML = `
+      <div class="table-responsive">
+        <table class="table table-bordered align-middle mb-0">
+          <thead><tr>${th}</tr></thead>
+          <tbody>
+            <tr>${rowImg}</tr>
+            <tr>${rowName}</tr>
+            <tr>${rowType}</tr>
+            <tr>${rowBrand}</tr>
+            <tr>${rowPrice}</tr>
+            <tr>${rowLink}</tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="small text-muted mt-2">Comparing ${items.length} item(s).</div>
+    `;
+  });
     
     // Track recently viewed products in sessionStorage
     function trackRecentlyViewed(productId, productData) {
