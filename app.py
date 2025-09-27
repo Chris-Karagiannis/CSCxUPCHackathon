@@ -2,6 +2,7 @@ from flask import Flask, render_template, jsonify, session, request
 import sqlite3
 
 app = Flask(__name__)
+app.config["SECRET_KEY"] = "mySecretKey"
 
 @app.route("/")
 def index():
@@ -102,6 +103,17 @@ def ensure_cart():
     if "cart" not in session:
         session["cart"] = {}
     return session["cart"]
+
+@app.post("/mockups/save")
+def mockup_save():
+    data = request.get_json()
+    with get_db() as db:
+        mid = db.insert("INSERT INTO mockups (title, template) VALUES (?, ?)", (data["title"], data["template"]))
+    for s in data["slots"]:
+        with get_db() as db:
+            db.insert("""INSERT INTO mockup_slots (mockup_id, slot_key, product_id, x, y, w, h) VALUES (?,?,?,?,?,?)""",
+                    (mid, s["slot"], s.get("product_id"), None, None, None, None))
+    return jsonify({"ok": True, "id": mid})
 
 
 if __name__ == "__main__":
