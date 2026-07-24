@@ -1,4 +1,4 @@
-# Project Name - CSC x UPCHackathon
+# Project Name - OutfitForge (CSC x UPCHackathon)
 ## Description
 Website that mergers clothing from different store fronts to be compared.
 
